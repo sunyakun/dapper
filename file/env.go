@@ -1,6 +1,7 @@
 package file
 
 import (
+	"os"
 	"strings"
 )
 
@@ -92,4 +93,8 @@ func (c Context) RunArgs() []string {
 		return ret
 	}
 	return []string{}
+}
+
+func (c Context) SSHAuthSock() string {
+	return os.Getenv("SSH_AUTH_SOCK")
 }

@@ -40,6 +40,7 @@ type Dapperfile struct {
 	NoContext   bool
 	MountSuffix string
 	Target      string
+	SSHAgent    bool
 }
 
 func Lookup(file string) (*Dapperfile, error) {
@@ -188,6 +189,15 @@ func (d *Dapperfile) runArgs(tag, shell string, commandArgs []string) (string, [
 				suffix = ":" + d.MountSuffix
 			}
 			args = append(args, "-v", fmt.Sprintf("%s:%s%s", fmt.Sprintf("%s/%s", wd, d.env.Cp()), d.env.Source(), suffix))
+		}
+	}
+
+	if d.SSHAgent {
+		if d.env.SSHAuthSock() == "" {
+			logrus.Warn("the --ssh-agent is enabled, but it seems that no ssh-agent is running")
+		} else {
+			args = append(args, "-v", fmt.Sprintf("%s:%s", d.env.SSHAuthSock(), d.env.SSHAuthSock()))
+			args = append(args, "-e", fmt.Sprintf("SSH_AUTH_SOCK=%s", d.env.SSHAuthSock()))
 		}
 	}
 
